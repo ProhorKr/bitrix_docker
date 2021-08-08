@@ -7,15 +7,14 @@ Docker окружение для Bitrix сайтов
 - Спуливаемся
 - Вносим в **host** файл соответствия ip и локального домена
     ```
-    127.0.0.151 site1.loc
-    127.0.0.151 site2.loc
+    127.0.0.1 test.loc
     ```
 - Открываем консоль и переходим в директорию, куда спулили репу
 - Вводим команду
     ```
     docker-compose up -d --build
     ```
-- Проверяем в браузере, что сайты **http://site1.loc** и **http://site2.loc** корректно открываются
+- Проверяем в браузере, что сайты **http://test.loc** корректно открываются
 - Радуемся результату
 
 ## Подробное описание на примере разворачивания окружения для одного сайта mysite.loc
@@ -24,25 +23,24 @@ Docker окружение для Bitrix сайтов
 - Спуливаемся
 - Вносим в **host** файл соответствия ip и локального домена (ip адрес 127.0.0.3 выбран в качестве примера)
     ```
-    127.0.0.3 mysite.loc
+    127.0.0.1 test.loc
     ```
-- Переименовываем директорию **mysite/www/site1.loc** в **mysite/www/mysite.loc**, а **mysite/www/site2.loc** - удаляем
 - В файле .env устанавливаем переменным следующие значения:
     ```
-    APP_IPPORT_HOST=127.0.0.3:80
-    APP_IPPORT_ADMINER_HOST=127.0.0.3:81
+    APP_IPPORT_HOST=127.0.0.1:80
+    APP_IPPORT_ADMINER_HOST=127.0.0.1:81
     ```
 - В файле **sites.conf** оставляем следующий код
     ```
     <VirtualHost *:80>
         ServerAdmin admin@test.com
         ServerName mysite.loc
-        ServerAlias www.mysite.loc
-        DocumentRoot /var/www/html/mysite.loc/public_html
-        ErrorLog /var/www/html/mysite.loc/apache_logs/error.log
-        CustomLog /var/www/html/mysite.loc/apache_logs/access.log combined
+        ServerAlias www.test.loc
+        DocumentRoot /var/www/html/test.loc/public_html
+        ErrorLog /var/www/html/test.loc/apache_logs/error.log
+        CustomLog /var/www/html/test.loc/apache_logs/access.log combined
     
-        <Directory /var/www/html/mysite.loc/public_html>
+        <Directory /var/www/html/test.loc/public_html>
             #Включение работы символических ссылок
             Options FollowSymLinks
             #Разрешение на перезапись всех директив при помощи .htaccess
@@ -55,10 +53,10 @@ Docker окружение для Bitrix сайтов
     ```
     docker-compose up -d --build
     ```
-- Проверяем в браузере, что сайт **http://mysite.loc** корректно открываются
+- Проверяем в браузере, что сайт **http://test.loc** корректно открываются
 - Проверяем в браузере, что Adminer, соответствующий mysite корректно открывается по следующему адресу
     ```
-    http://mysite.loc:81
+    http://test.loc:81
     ```
 - Для доступа к БД необходимы следующие логин и пасс (настраивается в .env). По умолчанию они следующие
     ```
@@ -84,19 +82,11 @@ Docker окружение для Bitrix сайтов
     Содержит файлы сайтов в рамках окружения и их логи
     Структура следующая:
     - www
-        - site1.loc
+        - test.loc
             - apache_logs #логи апача site1
             - public_html #файлы site1
             - mail #почта, отправляемая с site1
-        - site2.loc
-            - apache_logs #логи апача site2
-            - public_html #файлы site2
-            - mail #почта, отправляемая с site2
-        ...
-    По умолчанию в окружении крутятся 2 сайта: 
-    - site1.loc
-    - site2.loc
-    
+ 
     В директории mail каждого сайта сохраняются исходящие почтовые сообщения в формате ".eml".
     Сохранение почты в директорию mail сделано с помощью заглушки mail.php, 
     которая указана в поле "sendmail_path" в файле bx.ini
