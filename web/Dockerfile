@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.4-apache
 
 RUN apt-get update && apt-get install -y \
     mc \
@@ -12,12 +12,10 @@ RUN apt-get update && apt-get install -y \
 && docker-php-ext-install \
     pdo_mysql \
     mysqli \
-    mbstring \
     json \
     xml \
-    zip \
     opcache \
-&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+&& docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
 && docker-php-ext-install -j$(nproc) gd
 
 #копирование скрипта-заглушки для обработки функции php mail
